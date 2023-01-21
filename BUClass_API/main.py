@@ -1,12 +1,18 @@
 from flask import Flask, request
+import sqlite3
 
 app = Flask(__name__)
 
 
 @app.route('/', methods=['GET'])
 def out():
-    command = request.args.get('command')
-    return command
+    req = request.args.get('command')
+    con = sqlite3.connect( 'class_storage.db' )
+    cur = con.cursor()
+    
+    info = cur.execute(f'SELECT * FROM ClassData WHERE Name = "{req}"')
+    
+    return info.fetchall()
 
 if __name__ == '__main__':
     # This is used when running locally only. When deploying to Google App
