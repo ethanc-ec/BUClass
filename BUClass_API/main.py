@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def out():
-    req = request.args.get('command')
+    req = request.args.get('search')
     con = sqlite3.connect( 'class_storage.db' )
     cur = con.cursor()
     
