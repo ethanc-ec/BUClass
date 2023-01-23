@@ -4,14 +4,15 @@ The BU Class API allows for quick access to class information such as prerequisi
 
 To use the API simply use any web scraping package such as [Requests](https://requests.readthedocs.io/en/latest/) and the link:
 ```
-https://buclassapi.uk.r.appspot.com/search?code=
+https://buclassapi.uk.r.appspot.com/
 ```
 
-Add the full course code at the end of the link to retrieve information about a specific class.
+Add tags such as search or filter to grab specific information.
 For example:
 ```
 https://buclassapi.uk.r.appspot.com/search?code=cdsds100
 ```
+to search for the information of the course CDS DS 100.
 
 Different routes:
 - search
