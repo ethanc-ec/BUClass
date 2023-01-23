@@ -4,6 +4,16 @@ import sqlite3
 app = Flask(__name__)
 
 
+@app.route('/')
+def default():
+    welcome = '<h1>Welcome to BUClass_API!</h1>\
+        Use: \
+        <ul><li>/search?code= to search for a class.</li>\
+        <li>/filter?prereq= to filter classes by prerequisite.</li></ul>'
+
+    return welcome
+
+
 @app.route('/search', methods=['GET'])
 def search():
     req = request.args.get('code')
