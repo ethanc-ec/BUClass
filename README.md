@@ -4,20 +4,18 @@ The BU Class API allows for quick access to class information such as prerequisi
 
 To use the API simply use any web scraping package such as [Requests](https://requests.readthedocs.io/en/latest/) and the [link](https://buclassapi.uk.r.appspot.com/):
 ```
-https://buclassapi.uk.r.appspot.com/
-```
+https://cethan-buclassapi.uc.r.appspot.com/```
 
 Add tags such as search or filter to grab specific information.
 For example:
 ```
-https://buclassapi.uk.r.appspot.com/search?code=cdsds100
-```
+https://cethan-buclassapi.uc.r.appspot.com/search?code=cdsds100```
 to search for the information of the course CDS DS 100.
 
 Different routes:
-- search
-  - ```/search?code=```
-    - Search for general information of a class
-- filter
-  - ```/filter?prereq=```
-    - Filter classes that have a specific course as a prerequisite
+
+- search : `/search?code=`
+  - Search for general information of a class
+- find: `/find?[query]=`
+  - Use: `prereq`, `coreq`, `credit`, and/or `hub` to find specific classes that fit the criteria of the query
+  - Example: `/find?prereq=cs111&credit=4` will return all classes that have CS 111 as a prerequisite and are 4 credits
