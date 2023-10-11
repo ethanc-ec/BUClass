@@ -1,12 +1,15 @@
 """Main file for the BUClass_API."""
 
-import sqlite3
 from pathlib import Path
 
 from flask import Flask, request
+from google.cloud import bigquery
 
 app = Flask(__name__)
 parent_dir = Path(__file__).parent
+project = ''
+table = ''
+client = bigquery.Client(project=project)
 
 
 @app.route('/')
@@ -26,30 +29,30 @@ def search():
     """Search for a class by code."""
 
     req = request.args.get('code')
-    con = sqlite3.connect(f'{parent_dir}/courses.db')
-    cur = con.cursor()
 
-    info = cur.execute(f'SELECT * \
-                        FROM courses \
-                        WHERE course = "{req}"')
+    QUERY = (
+        "select *"
+        f"from `{table}`"
+        f"where course = '{req}'")
 
-    return [i for i in info.fetchall()[0]]
+    query_job = client.query(QUERY)
+    rows = query_job.result()
+
+    return [list(row) for row in rows]
 
 
 @app.route('/find', methods=['GET'])
 def find():
-    """Filter classes by prerequisite."""
+    """Filter classes by prereq, coreq, credit, and hub credits."""
 
-    con = sqlite3.connect(f'{parent_dir}/courses.db')
-    cur = con.cursor()
-    query = {
-        'prereq': '',
-        'coreq': '',
-        'credit': '',
-        'hub': ''
-    }
+    query = [
+        'prereq',
+        'coreq',
+        'credit',
+        'hub_credit'
+    ]
 
-    base, count = 'SELECT course FROM courses WHERE', 0
+    base, count = f'SELECT course FROM `{table}` WHERE', 0
 
     for section in query:
         req = request.args.get(section)
@@ -58,17 +61,28 @@ def find():
             base += ' AND'
         count += 1
 
-        if req and section != 'credit':
-            base += (f' {section} like "%{req}%"')
+        if req and section in ['prereq', 'coreq']:
+            input = req.replace(' ', '')
+            
+            if len(input) == 5:
+                input = f'{input[0:2]} {input[2:]}'
+            elif len(input) == 8:
+                input = f'{input[0:3]} {input[3:5]} {input[5:]}'
+            
+            base += (f" CONTAINS_SUBSTR({section}, '{input}')")
 
         elif req and section == 'credit':
             base += (f' {section} = "{req}"')
 
-    info = cur.execute(base)
-    clean_info = [i[0] for i in info.fetchall()]
+        elif req and section == 'hub_credit':
+            base += (f" CONTAINS_SUBSTR({section}, '{req}')")
 
-    if clean_info:
-        return f'{clean_info}'
+    query_job = client.query(base)
+
+    rows = [list(row) for row in query_job.result()]
+
+    if len(rows) != 0:
+        return rows
 
     return 'No classes found.'
 
