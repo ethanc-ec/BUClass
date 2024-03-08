@@ -1,12 +1,9 @@
 """Main file for the BUClass_API."""
 
-from pathlib import Path
-
 from flask import Flask, request
 from google.cloud import bigquery
 
 app = Flask(__name__)
-parent_dir = Path(__file__).parent
 project = ''
 table = ''
 client = bigquery.Client(project=project)
@@ -63,12 +60,12 @@ def find():
 
         if req and section in ['prereq', 'coreq']:
             input = req.replace(' ', '')
-            
+
             if len(input) == 5:
                 input = f'{input[0:2]} {input[2:]}'
             elif len(input) == 8:
                 input = f'{input[0:3]} {input[3:5]} {input[5:]}'
-            
+
             base += (f" CONTAINS_SUBSTR({section}, '{input}')")
 
         elif req and section == 'credit':
